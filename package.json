@@ -9,11 +9,11 @@
     "utils/"
   ],
   "scripts": {
-    "build": "node -v && tsc --project .",
+    "build": "tsc --project .",
     "lint": "eslint . --ext .ts,.js",
     "test": "yarn build && node test/index.js",
     "test:browser": "yarn build && browserify test/index.js > test/bundle.js && echo ';window.close();' >> test/bundle.js && cat test/bundle.js | smokestack",
-    "browser": "yarn build && browserify index.js -s SigUtil -o eth-sig-util.js && terser -c toplevel,sequences=false -m -- eth-sig-util.js > eth-sig-util.min.js",
+    "browser": "yarn build && browserify index.js -s sigUtil -o eth-sig-util.js && terser -c toplevel,sequences=false -m -- eth-sig-util.js > eth-sig-util.min.js",
     "prepublishOnly": "yarn build"
   },
   "repository": {
