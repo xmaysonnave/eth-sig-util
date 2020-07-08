@@ -8,4 +8,4 @@ package-lock.json
 
 # TypeScript
 /build
-**/*.d.ts
+**/*.d.ts**/*.js
