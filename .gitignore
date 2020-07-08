@@ -5,5 +5,7 @@ package-lock.json
 *.tgz
 *.log
 
-dist
-test/*.js
+# TypeScript
+/build
+**/*.d.ts
+**/*.js
