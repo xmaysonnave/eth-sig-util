@@ -532,7 +532,6 @@ export {
   signTypedData_v4,
   recoverTypedSignature,
   recoverTypedSignature_v4,
-  getBuffer,
 };
 
 /**
@@ -594,6 +593,3 @@ function nacl_decodeHex (msgHex: string): Uint8Array {
   return naclUtil.decodeBase64(msgBase64);
 }
 
-function getBuffer (text: string): Buffer {
-  return Buffer.from(text);
-}
