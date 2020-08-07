@@ -2,11 +2,10 @@ test/bundle.js
 
 node_modules
 .DS_Store
-package-lock.json
 
 *.tgz
 
 # TypeScript
 /build
-**/*.d.ts
-**/*.js
+**/index.js
+**/test/*.js
