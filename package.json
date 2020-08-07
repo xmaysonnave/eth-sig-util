@@ -1,8 +1,8 @@
 {
-  "name": "eth-sig-util",
-  "version": "3.0.1",
-  "description": "A few useful functions for signing ethereum data",
-  "main": "dist/index.js",
+  "name": "@xmaysonnave/eth-sig-util",
+  "version": "2.5.3",
+  "description": "Fork of https://github.com/MetaMask/eth-sig-util",
+  "main": "index.js",
   "files": [
     "dist"
   ],
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/MetaMask/eth-sig-util.git"
+    "url": "git+https://github.com/xmaysonnave/eth-sig-util.git"
   },
   "keywords": [
     "ethereum",
