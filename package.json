@@ -5,9 +5,12 @@
   "main": "index.js",
   "files": [
     "index.js",
+    "eth-sig-util.umd.min.js",
     "index.d.ts",
     "utils/"
   ],
+  "unpkg": "eth-sig-util.umd.min.js",
+  "jsdelivr": "eth-sig-util.umd.min.js",
   "scripts": {
     "build": "tsc --project .",
     "lint": "eslint . --ext .ts,.js",
