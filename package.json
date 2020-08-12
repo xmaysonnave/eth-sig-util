@@ -4,8 +4,13 @@
   "description": "Fork of https://github.com/MetaMask/eth-sig-util",
   "main": "index.js",
   "files": [
-    "dist"
+    "index.js",
+    "eth-sig-util.umd.min.js",
+    "index.d.ts",
+    "utils/"
   ],
+  "unpkg": "eth-sig-util.umd.min.js",
+  "jsdelivr": "eth-sig-util.umd.min.js",
   "scripts": {
     "build": "tsc --project ./tsconfig.prod.json && tsc --project ./tsconfig.test.json",
     "lint": "eslint . --ext ts,js,json",
