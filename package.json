@@ -5,6 +5,7 @@
   "main": "index.js",
   "files": [
     "index.js",
+    "eth-sig-util.umd.js",
     "eth-sig-util.umd.min.js",
     "index.d.ts",
     "utils/"
@@ -17,7 +18,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "yarn build && node test/index.js",
     "test:browser": "yarn build && browserify test/index.js > test/bundle.js && echo ';window.close();' >> test/bundle.js && cat test/bundle.js | smokestack",
-    "browser": "yarn build && browserify index.js -s sigUtil -o eth-sig-util.umd.min.js",
+    "browser": "yarn build && browserify index.js -s sigUtil -o eth-sig-util.umd.js && terser -c toplevel,sequences=false -m -- eth-sig-util.umd.js > eth-sig-util.umd.min.js",
     "prepublishOnly": "yarn build"
   },
   "repository": {
@@ -52,6 +53,7 @@
     "eslint-plugin-json": "^2.1.2",
     "eslint-plugin-node": "^11.1.0",
     "tape": "^4.9.1",
+    "terser": "^5.0.0",
     "typescript": "^3.9.6"
   }
 }
