@@ -1,6 +1,6 @@
 {
   "name": "eth-sig-util",
-  "version": "2.5.3+build.2",
+  "version": "2.5.4",
   "description": "Fork of https://github.com/MetaMask/eth-sig-util",
   "main": "index.js",
   "files": [
@@ -42,7 +42,7 @@
     "ethereumjs-abi": "0.6.5",
     "ethereumjs-util": "^5.1.1",
     "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "https://github.com/xmaysonnave/tweetnacl-util-js"
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^2.0.0",
