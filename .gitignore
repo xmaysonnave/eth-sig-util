@@ -5,5 +5,4 @@
 
 # TypeScript
 /build
-**/index.js
 **/test/*.js
