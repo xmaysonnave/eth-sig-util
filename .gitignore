@@ -7,5 +7,4 @@ node_modules
 
 # TypeScript
 /build
-**/index.js
 **/test/*.js
