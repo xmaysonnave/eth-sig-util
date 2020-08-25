@@ -1,5 +1,5 @@
 {
-  "name": "@xmaysonnave/eth-sig-util",
+  "name": "eth-sig-util",
   "version": "2.5.3+build.2",
   "description": "Fork of https://github.com/MetaMask/eth-sig-util",
   "main": "index.js",
@@ -15,7 +15,7 @@
     "lint": "eslint . --ext .ts,.js",
     "test": "yarn build && node test/index.js",
     "test:browser": "yarn build && browserify test/index.js > test/bundle.js && echo ';window.close();' >> test/bundle.js && cat test/bundle.js | smokestack",
-    "browser": "yarn build && browserify index.js -s sigUtil -o eth-sig-util.umd.js && terser -c toplevel,sequences=false -m -- eth-sig-util.umd.js > eth-sig-util.umd.min.js",
+    "browser": "yarn build && browserify index.js -s sigUtil -o eth-sig-util.umd.js && terser eth-sig-util.umd.js -c toplevel,sequences=false -m  -o eth-sig-util.umd.min.js",
     "prepublishOnly": "yarn build"
   },
   "repository": {
@@ -42,7 +42,7 @@
     "ethereumjs-abi": "0.6.5",
     "ethereumjs-util": "^5.1.1",
     "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "tweetnacl-util": "https://github.com/xmaysonnave/tweetnacl-util-js"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^2.0.0",
