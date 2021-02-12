@@ -5,5 +5,5 @@ package-lock.json
 *.tgz
 *.log
 
-/dist
+dist
 test/*.js
