@@ -26576,6 +26576,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   var util = {};
 
   function validateBase64(s) {
+    if (typeof s !== 'string') throw new TypeError('expected string');
     if (!(/^(?:[A-Za-z0-9+\/]{2}[A-Za-z0-9+\/]{2})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/.test(s))) {
       throw new TypeError('invalid base64 encoded string');
     }
@@ -26604,7 +26605,6 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
       };
 
       util.decodeBase64 = function (s, v) {
-        if (typeof s !== 'string') throw new TypeError('expected string');
         var inV = v !== undefined && v !== null && v ? v : false
         if (inV) {
           validateBase64(s);
@@ -26626,7 +26626,6 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
       };
 
       util.decodeBase64 = function(s, v) {
-        if (typeof s !== 'string') throw new TypeError('expected string');
         var inV = v !== undefined && v !== null && v ? v : false
         if (inV) {
           validateBase64(s);
@@ -26652,7 +26651,6 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
     };
 
     util.decodeBase64 = function(s, v) {
-      if (typeof s !== 'string') throw new TypeError('expected string');
       var inV = v !== undefined && v !== null && v ? v : false
       if (inV) {
         validateBase64(s);

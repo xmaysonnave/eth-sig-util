@@ -5299,9 +5299,9 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-"tweetnacl-util@https://github.com/xmaysonnave/tweetnacl-util-js#v0.16.2":
-  version "0.16.2"
-  resolved "https://github.com/xmaysonnave/tweetnacl-util-js#dad1a5b5c0f20cca059450aafd2aa36dbf38e292"
+"tweetnacl-util@https://github.com/xmaysonnave/tweetnacl-util-js#v0.16.3":
+  version "0.16.3"
+  resolved "https://github.com/xmaysonnave/tweetnacl-util-js#f667a03c0eb03e96b5c19d71ab1fd352bad31dd4"
 
 tweetnacl@^1.0.3:
   version "1.0.3"
