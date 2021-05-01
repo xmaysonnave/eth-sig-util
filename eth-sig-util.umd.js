@@ -1854,7 +1854,11 @@ function fromByteArray (uint8) {
 
   var Buffer;
   try {
-    Buffer = require('buffer').Buffer;
+    if (typeof window !== 'undefined' && typeof window.Buffer !== 'undefined') {
+      Buffer = window.Buffer;
+    } else {
+      Buffer = require('buffer').Buffer;
+    }
   } catch (e) {
   }
 
@@ -1895,23 +1899,19 @@ function fromByteArray (uint8) {
     var start = 0;
     if (number[0] === '-') {
       start++;
-    }
-
-    if (base === 16) {
-      this._parseHex(number, start);
-    } else {
-      this._parseBase(number, base, start);
-    }
-
-    if (number[0] === '-') {
       this.negative = 1;
     }
 
-    this.strip();
-
-    if (endian !== 'le') return;
-
-    this._initArray(this.toArray(), base, endian);
+    if (start < number.length) {
+      if (base === 16) {
+        this._parseHex(number, start, endian);
+      } else {
+        this._parseBase(number, base, start);
+        if (endian === 'le') {
+          this._initArray(this.toArray(), base, endian);
+        }
+      }
+    }
   };
 
   BN.prototype._initNumber = function _initNumber (number, base, endian) {
@@ -1987,31 +1987,29 @@ function fromByteArray (uint8) {
     return this.strip();
   };
 
-  function parseHex (str, start, end) {
-    var r = 0;
-    var len = Math.min(str.length, end);
-    for (var i = start; i < len; i++) {
-      var c = str.charCodeAt(i) - 48;
+  function parseHex4Bits (string, index) {
+    var c = string.charCodeAt(index);
+    // 'A' - 'F'
+    if (c >= 65 && c <= 70) {
+      return c - 55;
+    // 'a' - 'f'
+    } else if (c >= 97 && c <= 102) {
+      return c - 87;
+    // '0' - '9'
+    } else {
+      return (c - 48) & 0xf;
+    }
+  }
 
-      r <<= 4;
-
-      // 'a' - 'f'
-      if (c >= 49 && c <= 54) {
-        r |= c - 49 + 0xa;
-
-      // 'A' - 'F'
-      } else if (c >= 17 && c <= 22) {
-        r |= c - 17 + 0xa;
-
-      // '0' - '9'
-      } else {
-        r |= c & 0xf;
-      }
+  function parseHexByte (string, lowerBound, index) {
+    var r = parseHex4Bits(string, index);
+    if (index - 1 >= lowerBound) {
+      r |= parseHex4Bits(string, index - 1) << 4;
     }
     return r;
   }
 
-  BN.prototype._parseHex = function _parseHex (number, start) {
+  BN.prototype._parseHex = function _parseHex (number, start, endian) {
     // Create possibly bigger array to ensure that it fits the number
     this.length = Math.ceil((number.length - start) / 6);
     this.words = new Array(this.length);
@@ -2019,25 +2017,38 @@ function fromByteArray (uint8) {
       this.words[i] = 0;
     }
 
-    var j, w;
-    // Scan 24-bit chunks and add them to the number
+    // 24-bits chunks
     var off = 0;
-    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
-      w = parseHex(number, i, i + 6);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
-      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-      off += 24;
-      if (off >= 26) {
-        off -= 26;
-        j++;
+    var j = 0;
+
+    var w;
+    if (endian === 'be') {
+      for (i = number.length - 1; i >= start; i -= 2) {
+        w = parseHexByte(number, start, i) << off;
+        this.words[j] |= w & 0x3ffffff;
+        if (off >= 18) {
+          off -= 18;
+          j += 1;
+          this.words[j] |= w >>> 26;
+        } else {
+          off += 8;
+        }
+      }
+    } else {
+      var parseLength = number.length - start;
+      for (i = parseLength % 2 === 0 ? start + 1 : start; i < number.length; i += 2) {
+        w = parseHexByte(number, start, i) << off;
+        this.words[j] |= w & 0x3ffffff;
+        if (off >= 18) {
+          off -= 18;
+          j += 1;
+          this.words[j] |= w >>> 26;
+        } else {
+          off += 8;
+        }
       }
     }
-    if (i + 6 !== start) {
-      w = parseHex(number, start, i + 6);
-      this.words[j] |= (w << off) & 0x3ffffff;
-      this.words[j + 1] |= w >>> (26 - off) & 0x3fffff;
-    }
+
     this.strip();
   };
 
@@ -2108,6 +2119,8 @@ function fromByteArray (uint8) {
         this._iaddn(word);
       }
     }
+
+    this.strip();
   };
 
   BN.prototype.copy = function copy (dest) {
@@ -26564,7 +26577,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 
   function validateBase64(s) {
     if (!(/^(?:[A-Za-z0-9+\/]{2}[A-Za-z0-9+\/]{2})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/.test(s))) {
-      throw new TypeError('invalid encoding');
+      throw new TypeError('invalid base64 encoded string');
     }
   }
 
@@ -26590,9 +26603,20 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
           return Buffer.from(arr).toString('base64');
       };
 
-      util.decodeBase64 = function (s) {
-        validateBase64(s);
-        return new Uint8Array(Array.prototype.slice.call(Buffer.from(s, 'base64'), 0));
+      util.decodeBase64 = function (s, v) {
+        if (typeof s !== 'string') throw new TypeError('expected string');
+        var inV = v !== undefined && v !== null && v ? v : false
+        if (inV) {
+          validateBase64(s);
+        }
+        try {
+          return new Uint8Array(Array.prototype.slice.call(Buffer.from(s, 'base64'), 0));
+        } catch (error) {
+          if (!inV) {
+            validateBase64(s);
+          }
+          throw error;
+        }
       };
 
     } else {
@@ -26601,9 +26625,20 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
         return (new Buffer(arr)).toString('base64');
       };
 
-      util.decodeBase64 = function(s) {
-        validateBase64(s);
-        return new Uint8Array(Array.prototype.slice.call(new Buffer(s, 'base64'), 0));
+      util.decodeBase64 = function(s, v) {
+        if (typeof s !== 'string') throw new TypeError('expected string');
+        var inV = v !== undefined && v !== null && v ? v : false
+        if (inV) {
+          validateBase64(s);
+        }
+        try {
+          return new Uint8Array(Array.prototype.slice.call(new Buffer(s, 'base64'), 0));
+        } catch (error) {
+          if (!inV) {
+            validateBase64(s);
+          }
+          throw error;
+        }
       };
     }
 
@@ -26616,11 +26651,22 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
       return btoa(s.join(''));
     };
 
-    util.decodeBase64 = function(s) {
-      validateBase64(s);
-      var i, d = atob(s), b = new Uint8Array(d.length);
-      for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
-      return b;
+    util.decodeBase64 = function(s, v) {
+      if (typeof s !== 'string') throw new TypeError('expected string');
+      var inV = v !== undefined && v !== null && v ? v : false
+      if (inV) {
+        validateBase64(s);
+      }
+      try {
+        var i, d = atob(s), b = new Uint8Array(d.length);
+        for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
+        return b;
+      } catch (error) {
+        if (!inV) {
+          validateBase64(s);
+        }
+        throw error;
+      }
     };
 
   }
